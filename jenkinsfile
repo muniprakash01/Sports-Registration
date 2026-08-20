@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building the Sports Registration application'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing the Sports Registration application'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying the Sports Registration application'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                echo 'Verifying the application'
+            }
+        }
+
+        stage('Complete') {
+            steps {
+                echo 'Sports Registration pipeline completed successfully'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}

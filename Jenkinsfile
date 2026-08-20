@@ -52,7 +52,7 @@ pipeline {
                 echo 'Checking application health...'
                 sh '''
                     sleep 15
-                    curl -f http://localhost/api/health
+                    curl -f http://100.56.240.19/api/health
                 '''
             }
         }

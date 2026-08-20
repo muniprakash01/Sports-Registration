@@ -1,34 +1,81 @@
 pipeline {
+
     agent any
 
     stages {
-        stage('Build') {
+
+        stage('Checkout') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                echo 'Checking out source code...'
+                checkout scm
             }
         }
 
-        stage('Test') {
+        stage('Verify Tools') {
             steps {
-                sh 'mvn test'
+                echo 'Checking Docker installation...'
+                sh 'docker --version'
+                sh 'docker compose version'
             }
         }
 
-        stage('Deploy') {
+        stage('Build Docker Images') {
             steps {
-                echo 'Deployment stage completed.'
+                echo 'Building Docker images...'
+                sh 'docker compose build --no-cache'
+            }
+        }
+
+        stage('Stop Existing Containers') {
+            steps {
+                echo 'Stopping old containers...'
+                sh 'docker compose down || true'
+            }
+        }
+
+        stage('Start Application') {
+            steps {
+                echo 'Starting Sports Registration application...'
+                sh 'docker compose up -d'
+            }
+        }
+
+        stage('Check Containers') {
+            steps {
+                echo 'Checking running containers...'
+                sh 'docker compose ps'
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                echo 'Checking application health...'
+                sh '''
+                    sleep 15
+                    curl -f http://localhost/api/health
+                '''
             }
         }
     }
 
     post {
+
         success {
-            echo 'CI/CD pipeline completed successfully!'
+            echo '========================================='
+            echo 'Sports Registration Build Successful!'
+            echo 'Application deployed successfully.'
+            echo '========================================='
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo '========================================='
+            echo 'Sports Registration Build Failed!'
+            echo 'Check the Jenkins console output.'
+            echo '========================================='
+        }
+
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }
-
